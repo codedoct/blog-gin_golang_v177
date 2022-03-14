@@ -2,10 +2,6 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
-
-	"base-code/lib/errorlog"
 )
 
 type Response struct {
@@ -24,20 +20,6 @@ type Meta struct {
 }
 
 func Error(c *gin.Context, code int, message string) {
-	if code == http.StatusInternalServerError {
-		err := errorlog.SendErrorLogGChat(&errorlog.ErrorData{
-			Error:  message,
-			Params: c.Params,
-			Method: c.Request.Method,
-			Path:   c.Request.RequestURI,
-			Host:   c.Request.Host,
-			Header: c.Request.Header,
-		})
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
 	c.JSON(code, Response{Data: nil, Message: message})
 }
 

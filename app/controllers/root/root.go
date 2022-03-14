@@ -1,10 +1,11 @@
 package root
 
 import (
+	"blog-gin_golang_v177/lib/response"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func Index(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{"data": nil, "message": "OK"})
+	response.Json(context, http.StatusOK, nil)
 }

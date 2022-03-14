@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/joho/godotenv/autoload"
 	"log"
 
 	"blog-gin_golang_v177/config"
