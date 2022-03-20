@@ -8,9 +8,15 @@ import (
 )
 
 func MainRouter(db *gorm.DB, main *gin.RouterGroup) {
-	userCtrl := user.RoleController(db)
-	user := main.Group("role")
+	userRoleCtrl := user.RoleController(db)
+	userRoute := main.Group("role")
 	{
-		user.GET("/", userCtrl.GetRole)
+		userRoute.GET("/", userRoleCtrl.GetRole)
+	}
+
+	userAuthCtrl := user.AuthController(db)
+	authRoute := main.Group("auth")
+	{
+		authRoute.POST("/register", userAuthCtrl.Register)
 	}
 }
