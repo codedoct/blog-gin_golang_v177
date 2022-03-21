@@ -9,6 +9,7 @@ import (
 type AuthRepositoryInterface interface {
 	FirstByEmail(email *string) (model.User, error)
 	Create(reqBody *model.ReqBodyRegister) error
+	UpdateToken(model.User, string) error
 }
 
 type authRepository struct {
@@ -37,4 +38,9 @@ func (r *authRepository) Create(reqBody *model.ReqBodyRegister) error {
 		user.RoleID = "1ca78238-8e40-4763-a20f-59b5b41791b1" // default superadmin
 	}
 	return r.DB.Create(&user).Error
+}
+
+func (r *authRepository) UpdateToken(user model.User, ss string) error {
+	user.Token = ss
+	return r.DB.Save(&user).Error
 }

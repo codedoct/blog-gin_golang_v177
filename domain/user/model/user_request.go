@@ -6,3 +6,8 @@ type ReqBodyRegister struct {
 	Email    string `binding:"required,email"`
 	Password string `binding:"required,gte=6"`
 }
+
+type ReqBodyLogin struct {
+	Email    string `binding:"required,email"`
+	Password string `binding:"required,gte=6"`
+}

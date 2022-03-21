@@ -33,3 +33,17 @@ func (ac *authController) Register(context *gin.Context) {
 	}
 	response.Json(context, http.StatusOK, nil)
 }
+
+func (ac *authController) Login(context *gin.Context) {
+	var reqBody model.ReqBodyLogin
+	if err := context.ShouldBind(&reqBody); err != nil {
+		response.Error(context, http.StatusBadRequest, err.Error())
+		return
+	}
+	resBody, errStatus, err := ac.AuthService.Login(&reqBody)
+	if err != nil {
+		response.Error(context, errStatus, err.Error())
+		return
+	}
+	response.Json(context, http.StatusOK, resBody)
+}

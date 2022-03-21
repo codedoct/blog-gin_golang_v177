@@ -2,7 +2,9 @@ package user
 
 import (
 	"errors"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
+	"time"
 
 	"blog-gin_golang_v177/domain/user/model"
 	"blog-gin_golang_v177/domain/user/repository"
@@ -12,6 +14,7 @@ import (
 
 type AuthServiceInterface interface {
 	Register(reqBody *model.ReqBodyRegister) (int, error)
+	Login(reqBody *model.ReqBodyLogin) (*model.ResBody, int, error)
 }
 
 type authService struct {
@@ -37,4 +40,31 @@ func (s *authService) Register(reqBody *model.ReqBodyRegister) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 	return http.StatusOK, nil
+}
+
+func (s *authService) Login(reqBody *model.ReqBodyLogin) (*model.ResBody, int, error) {
+	user, err := s.Repository.FirstByEmail(&reqBody.Email)
+	if err != nil {
+		return nil, http.StatusBadRequest, errors.New(constant.UserNotFound)
+	}
+	if err = encrypt.CompareHashAndPassword(&user.EncryptedPassword, &reqBody.Password); err != nil {
+		return nil, http.StatusBadRequest, errors.New(constant.PasswordIsIncorrect)
+	}
+	claims := model.Jwt{
+		ID:    user.ID,
+		Email: user.Email,
+		StandardClaims: &jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * time.Duration(1)).Unix(),
+		},
+	}
+	ss, err := encrypt.NewWithClaims(&claims)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+	if err = s.Repository.UpdateToken(user, ss); err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+	var resBody model.ResBody
+	resBody.Token = ss
+	return &resBody, http.StatusOK, nil
 }

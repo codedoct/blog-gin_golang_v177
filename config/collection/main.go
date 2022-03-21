@@ -18,5 +18,6 @@ func MainRouter(db *gorm.DB, main *gin.RouterGroup) {
 	authRoute := main.Group("auth")
 	{
 		authRoute.POST("/register", userAuthCtrl.Register)
+		authRoute.POST("/login", userAuthCtrl.Login)
 	}
 }
