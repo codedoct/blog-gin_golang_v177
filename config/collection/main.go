@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 
 	"blog-gin_golang_v177/app/controllers/user"
+	"blog-gin_golang_v177/config/middleware"
 )
 
 func MainRouter(db *gorm.DB, main *gin.RouterGroup) {
@@ -19,5 +20,6 @@ func MainRouter(db *gorm.DB, main *gin.RouterGroup) {
 	{
 		authRoute.POST("/register", userAuthCtrl.Register)
 		authRoute.POST("/login", userAuthCtrl.Login)
+		authRoute.POST("/logout", middleware.Auth(db), userAuthCtrl.Logout)
 	}
 }

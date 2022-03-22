@@ -15,6 +15,8 @@ import (
 type AuthServiceInterface interface {
 	Register(reqBody *model.ReqBodyRegister) (int, error)
 	Login(reqBody *model.ReqBodyLogin) (*model.ResBody, int, error)
+	CheckAuth(string) (*model.User, error)
+	Logout(model.User) (int, error)
 }
 
 type authService struct {
@@ -67,4 +69,29 @@ func (s *authService) Login(reqBody *model.ReqBodyLogin) (*model.ResBody, int, e
 	var resBody model.ResBody
 	resBody.Token = ss
 	return &resBody, http.StatusOK, nil
+}
+
+func (s *authService) CheckAuth(bearerToken string) (*model.User, error) {
+	tokenRaw, claims, err := encrypt.Parse(bearerToken)
+	if err != nil {
+		return nil, err
+	}
+	id := string(claims["id"].(string))
+	user, err := s.Repository.FirstByID(id)
+	if err != nil {
+		if err.Error() == constant.RecordNotFound {
+			return nil, errors.New(constant.UserNotFound)
+		}
+	}
+	if user.Token != tokenRaw {
+		return nil, errors.New(constant.UserHasSignedOut)
+	}
+	return &user, nil
+}
+
+func (s *authService) Logout(user model.User) (int, error) {
+	if err := s.Repository.DeleteToken(user); err != nil {
+		return http.StatusInternalServerError, err
+	}
+	return http.StatusOK, nil
 }
