@@ -12,6 +12,7 @@ var Routers = gin.Default()
 
 func init() {
 	corsConfig(Routers)
+	Routers.Static("/static", "./static")
 
 	Routers.GET("/", root.Index)
 	main := Routers.Group("v1")
