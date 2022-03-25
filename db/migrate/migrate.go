@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := m.Up(); err != nil {
+	if err := m.Up(); err != nil && err.Error() != "no change" {
 		log.Fatal(err)
 	}
 }

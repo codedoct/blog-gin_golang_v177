@@ -6,3 +6,8 @@ run_migrate:
 
 run_seed:
 	psql -U postgres codedoct_gin_golang177 < db/seed.sql
+
+run_docker:
+	docker stop basecodeapiserver || true && docker rm basecodeapiserver || true
+	docker build --tag basecode-api:dev .
+	docker run --name basecodeapiserver -d -p 4001:4001 basecode-api:dev
