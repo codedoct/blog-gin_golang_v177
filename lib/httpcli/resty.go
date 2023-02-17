@@ -10,7 +10,17 @@ type HttpClient struct {
 	ReqBody    interface{}
 }
 
+type HttpClientParam struct {
+	Params  map[string]string
+	Headers map[string]string
+	URL     string
+}
+
 func Post(httpClient *HttpClient) (res *resty.Response, err error) {
 	res, err = client.R().SetHeaders(httpClient.ReqHeaders).SetBody(httpClient.ReqBody).Post(httpClient.URL)
 	return
+}
+
+func Get(httpClient *HttpClientParam) (*resty.Response, error) {
+	return client.R().SetHeaders(httpClient.Headers).SetQueryParams(httpClient.Params).Get(httpClient.URL)
 }
